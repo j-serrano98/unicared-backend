@@ -3,43 +3,95 @@ from .models import Teacher, Review, Department, Subject, Career, Profile, Enrol
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
+class TeacherResource(resources.ModelResource):
+    class Meta:
+        model = Teacher
+        fields = ('id', 'name', 'uuid', 'department_id')
+
+class ReviewResource(resources.ModelResource):
+    class Meta:
+        model = Review
+        fields = ('id', 'punctuality', 'clarity', 'justice', 'support', 'flexibility', 'knowledge', 'methodology', 'comment', 'created_at', 'updated_at', 'enrollment_id')
+
+class DepartmentResource(resources.ModelResource):
+    class Meta:
+        model = Department
+        fields = ('id', 'name')
+
 class SubjectResource(resources.ModelResource):
     class Meta:
         model = Subject
         fields = ('id', 'name', 'credits', 'period')
-        # export_order = ('id', 'name', 'credits')
 
 
-class TeacherResource(resources.ModelResource):
+class CareeResource(resources.ModelResource):
     class Meta:
-        model = Subject
-        fields = ('id', 'name', 'department')
+        model = Career
+        fields = ('id', 'name', 'department_id')
+
+class ProfileResource(resources.ModelResource):
+    class Meta:
+        model = Profile
+        fields = ('id', 'career_id', 'user_id', 'onboarding_completed')
+
+
+class EnrollmentResource(resources.ModelResource):
+    class Meta:
+        model = Enrollment
+        fields = ('id', 'status', 'grade', 'student_id', 'teacher_id', 'completion_date', 'subject_id')
+
+
+
+@admin.register(Teacher)
+class TeacherAdmin(ImportExportModelAdmin):
+    resource_classes = [TeacherResource]
+
+    search_fields = ['name']
+    list_display = ('id', 'name', 'uuid', 'department_id')
+
+@admin.register(Review)
+class ReviewAdmin(ImportExportModelAdmin):
+    resource_classes = [ReviewResource]
+
+    list_display = ('id', 'punctuality', 'clarity', 'justice', 'support', 'flexibility', 'knowledge', 'methodology', 'comment', 'created_at', 'updated_at', 'enrollment_id')
+
+
+@admin.register(Department)
+class DepartmentAdmin(ImportExportModelAdmin):
+    resource_classes = [DepartmentResource]
+
+    search_fields = ['name']
+    list_display = ('id', 'name')
 
 
 @admin.register(Subject)
 class SubjectAdmin(ImportExportModelAdmin):
     resource_classes = [SubjectResource]
 
+    search_fields = ['name']
+    list_display = ('id', 'name', 'credits', 'period')
+
+
+@admin.register(Career)
+class CareerAdmin(ImportExportModelAdmin):
+    resource_classes = [CareeResource]
+
+    search_fields = ['name']
+    list_display = ('id', 'name', 'department_id')
+
+
+
+@admin.register(Profile)
+class ProfileAdmin(ImportExportModelAdmin):
+    resource_classes = [ProfileResource]
+
     # prepopulated_fields = {'slug': ('name',)}
     search_fields = ('name',)
-    list_display = ('name', 'credits', 'period')
+    list_display = ('id', 'career_id', 'user_id', 'onboarding_completed')
 
-    # @admin.display(description='Pre-Req')
-    # def get_prereq_key(self, obj):
-    #     return obj.prereq.key if obj.prereq else '-'
+@admin.register(Enrollment)
+class EnrollmentAdmin(ImportExportModelAdmin):
+    resource_classes = [EnrollmentResource]
 
-
-@admin.register(Teacher)
-class SubjectAdmin(ImportExportModelAdmin):
-    resource_classes = [SubjectResource]
-
-    # prepopulated_fields = {'slug': ('name',)}
     search_fields = ('name', 'department')
-    list_display = ('name', 'department')
-
-
-admin.site.register(Review)
-admin.site.register(Department)
-admin.site.register(Career)
-admin.site.register(Profile)
-admin.site.register(Enrollment)
+    list_display = ('id', 'status', 'grade', 'student_id', 'teacher_id', 'completion_date', 'subject_id')
