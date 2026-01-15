@@ -123,10 +123,13 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-db_from_env = dj_database_url.config(conn_max_age=600)
+db_url = os.environ.get('DATABASE_URL')
 
-if db_from_env:
-    DATABASES = {'default': db_from_env}
+if db_url:
+    # .parse() ignores other environment variables and only looks at the string provided
+    DATABASES = {
+        'default': dj_database_url.parse(db_url, conn_max_age=600)
+    }
 else:
     DATABASES = {
         'default': {
