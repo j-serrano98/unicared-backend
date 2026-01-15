@@ -38,7 +38,7 @@ class ProfileResource(resources.ModelResource):
 class EnrollmentResource(resources.ModelResource):
     class Meta:
         model = Enrollment
-        fields = ('id', 'status', 'grade', 'student_id', 'teacher_id', 'completion_date', 'subject_id')
+        fields = ('id', 'status', 'grade', 'student', 'teacher', 'completion_date', 'subject')
 
 
 
