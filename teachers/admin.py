@@ -77,7 +77,7 @@ class CareerAdmin(ImportExportModelAdmin):
     resource_classes = [CareeResource]
 
     search_fields = ['name']
-    list_display = ('id', 'name', 'department_id')
+    list_display = ('id', 'name', 'department')
 
 
 
@@ -94,4 +94,4 @@ class EnrollmentAdmin(ImportExportModelAdmin):
     resource_classes = [EnrollmentResource]
 
     search_fields = ('name', 'department')
-    list_display = ('id', 'status', 'grade', 'student_id', 'teacher_id', 'completion_date', 'subject_id')
+    list_display = ('id', 'status', 'grade', 'student', 'teacher', 'completion_date', 'subject')
