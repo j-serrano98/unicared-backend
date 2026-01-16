@@ -90,6 +90,8 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     "https://unicared-josue-serrano.vercel.app",
+    'https://unicared-frontend-uppf-qtwk6tblj.vercel.app',
+    'https://unicared-frontend-uppf.vercel.app'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
