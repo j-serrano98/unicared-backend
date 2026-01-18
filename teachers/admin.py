@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import Teacher, Review, Department, Subject, Career, Profile, Enrollment
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
+from django.db.models.functions import Lower
 
 class TeacherResource(resources.ModelResource):
     class Meta:
@@ -48,6 +49,9 @@ class TeacherAdmin(ImportExportModelAdmin):
 
     search_fields = ['name']
     list_display = ('id', 'name', 'uuid', 'department_id')
+
+    def get_ordering(self, request):
+        return [Lower('name')] 
 
 @admin.register(Review)
 class ReviewAdmin(ImportExportModelAdmin):
