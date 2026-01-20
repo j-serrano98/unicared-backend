@@ -38,26 +38,38 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     username = serializers.ReadOnlyField(source='user.username')
     subject_name = serializers.ReadOnlyField(source='subject.name')
-    skills = serializers.SerializerMethodField()
+    # skills = serializers.SerializerMethodField()
     class Meta:
         model = Review
-        fields = ['id', 'updated_at', 'average', 'username', 'subject_name', 'comment', 'punctuality', 'clarity', 'justice', 'support', 'flexibility', 'knowledge', 'methodology', 'skills']
+        fields = ['id',
+                  'updated_at',
+                  'average',
+                  'username',
+                  'subject_name',
+                  'comment',
+                  'punctuality',
+                  'clarity',
+                  'justice',
+                  'support',
+                  'flexibility',
+                  'knowledge',
+                  'methodology']
 
-    def get_skills(self, obj):
-        skills = {
-            "Punctuality": obj.punctuality,
-            "Clarity": obj.clarity,
-            "Justice": obj.justice,
-            "Support": obj.support,
-            "Flexibility": obj.flexibility,
-            "Knowledge": obj.knowledge,
-            "Methodology": obj.methodology,
-        }
+    # def get_skills(self, obj):
+    #     skills = {
+    #         "Punctuality": obj.punctuality,
+    #         "Clarity": obj.clarity,
+    #         "Justice": obj.justice,
+    #         "Support": obj.support,
+    #         "Flexibility": obj.flexibility,
+    #         "Knowledge": obj.knowledge,
+    #         "Methodology": obj.methodology,
+    #     }
 
-        return [
-            {"skill": skill, "score": score }
-            for skill, score in skills.items()
-        ]
+    #     return [
+    #         {"skill": skill, "score": score }
+    #         for skill, score in skills.items()
+    #     ]
     
 # class CareerSerializer(serializers.ModelSerializer):
 #     subject_name = serializers.ReadOnlyField(source='subject.name')
@@ -142,13 +154,20 @@ class SubjectSerializer(serializers.ModelSerializer):
 class TeacherSerializer(serializers.ModelSerializer):
     department_name = serializers.CharField(source='department.name', read_only=True)
     subjects = serializers.StringRelatedField(many=True, read_only=True)
-
     rating = serializers.SerializerMethodField()
+    skill_rating = serializers.SerializerMethodField()
     reviews_count = serializers.SerializerMethodField()
     
     class Meta:
         model = Teacher
-        fields = ['id', 'name', 'department_name', 'subjects', 'rating', 'reviews_count']
+        fields = ['uuid',
+                  'name',
+                  'department_name',
+                  'rating',
+                  'reviews_count',
+                  'skill_rating',
+                  'subjects',
+                  ]
 
     def get_rating(self, obj):
         result = obj.enrollments.filter(
@@ -170,7 +189,45 @@ class TeacherSerializer(serializers.ModelSerializer):
 
         return result['rating']
     
+    def get_skill_rating(self, obj):
+        averages = obj.enrollments.filter(
+            review__isnull=False
+        ).aggregate(
+            Punctuality=Avg('review__punctuality'),
+            Clarity=Avg('review__clarity'),
+            Justice=Avg('review__justice'),
+            Support=Avg('review__support'),
+            Flexibility=Avg('review__flexibility'),
+            Knowledge=Avg('review__knowledge'),
+            Methodology=Avg('review__methodology'),
+        )
+
+        return [
+            {
+                "skill": skill, 
+                "score": round(score, 2) if score is not None else 0,
+            }
+            for skill, score in averages.items()
+        ]
+
     def get_reviews_count(self, obj):
         return obj.enrollments.filter(
             review__isnull=False
         ).count()
+    
+
+class TeacherDetailSerializer(TeacherSerializer):
+    reviews = ReviewSerializer(many=True, read_only=True)
+
+    class Meta(TeacherSerializer.Meta):
+        fields = TeacherSerializer.Meta.fields + ['reviews']
+
+    def to_representation(self, instance):
+
+        representation = super().to_representation(instance)
+        
+        enrollments = instance.enrollments.filter(review__isnull=False)
+        reviews = [e.review for e in enrollments]
+        
+        representation['reviews'] = ReviewSerializer(reviews, many=True).data
+        return representation
