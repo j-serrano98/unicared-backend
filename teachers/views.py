@@ -151,13 +151,14 @@ class ProfileStatsView(APIView):
         return Response(serializer.data)
 
 class TeacherListView(generics.ListCreateAPIView):
-    queryset = Teacher.objects.all()
+    queryset = Teacher.objects.all().prefetch_related('enrollments__review', 'subjects', 'department')
     serializer_class = TeacherSerializer
+    lookup_field = 'uuid'
 
-# class TeacherDetail(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Teacher.objects.all()
-#     serializer_class = TeacherSerializer
-#     lookup_field = 'uuid'
+class TeacherDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Teacher.objects.all().prefetch_related('enrollments__review', 'subjects', 'department')
+    serializer_class = TeacherDetailSerializer
+    lookup_field = 'uuid'
 
 # class TeacherReviewList(generics.ListCreateAPIView):
 #     # queryset = Review.objects.filter(where current teacher)
