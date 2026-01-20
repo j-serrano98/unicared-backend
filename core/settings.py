@@ -141,13 +141,17 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     "https://unicared-josue-serrano.vercel.app",
     'https://unicared-frontend-uppf-qtwk6tblj.vercel.app',
-    'https://unicared-frontend-uppf.vercel.app'
+    'https://unicared-frontend-uppf.vercel.app',
+    'http://unicared.tech',
+    'unicared.tech',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     'https://*.railway.app',
-    'https://*.vercel.app'
+    'https://*.vercel.app',
+    'http://unicared.tech',
+    'unicared.tech',
 ]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
