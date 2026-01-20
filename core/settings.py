@@ -143,7 +143,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://unicared-frontend-uppf-qtwk6tblj.vercel.app',
     'https://unicared-frontend-uppf.vercel.app',
     'http://unicared.tech',
-    'unicared.tech',
+    "https://www.yournewdomain.me",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
