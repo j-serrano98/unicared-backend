@@ -17,7 +17,6 @@ class ProfileDetailSerializer(serializers.ModelSerializer):
 class SelectCareerSerializer(serializers.Serializer):
     career_id = serializers.IntegerField()
 
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -32,7 +31,6 @@ class ProfileStatsSerializer(serializers.Serializer):
     credits_completed = serializers.IntegerField()
     credits_left = serializers.IntegerField()
     completion_rate = serializers.FloatField()
-
 
 class ReviewSerializer(serializers.ModelSerializer):
 
@@ -71,11 +69,11 @@ class ReviewSerializer(serializers.ModelSerializer):
     #         for skill, score in skills.items()
     #     ]
     
-# class CareerSerializer(serializers.ModelSerializer):
-#     subject_name = serializers.ReadOnlyField(source='subject.name')
-#     class Meta:
-#         model = Career
-#         fields = ['id', 'name', 'subject_name']
+class CareerSerializer(serializers.ModelSerializer):
+    subject_name = serializers.ReadOnlyField(source='subject.name')
+    class Meta:
+        model = Career
+        fields = ['id', 'name', 'subject_name']
 
 # class UserMeSerializer(serializers.ModelSerializer):
 #     career = CareerSerializer(source="profile.career")
