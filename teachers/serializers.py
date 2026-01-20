@@ -193,24 +193,22 @@ class TeacherSerializer(serializers.ModelSerializer):
         averages = obj.enrollments.filter(
             review__isnull=False
         ).aggregate(
-            Avg('review__punctuality'),
-            Avg('review__clarity'),
-            Avg('review__justice'),
-            Avg('review__support'),
-            Avg('review__flexibility'),
-            Avg('review__knowledge'),
-            Avg('review__methodology'),
+            Punctuality=Avg('review__punctuality'),
+            Clarity=Avg('review__clarity'),
+            Justice=Avg('review__justice'),
+            Support=Avg('review__support'),
+            Flexibility=Avg('review__flexibility'),
+            Knowledge=Avg('review__knowledge'),
+            Methodology=Avg('review__methodology'),
         )
-        
-        return {
-            "Punctuality": averages['review__punctuality__avg'] or 0,
-            "Clarity": averages['review__clarity__avg'] or 0,
-            "Justice": averages['review__justice__avg'] or 0,
-            "Support": averages['review__support__avg'] or 0,
-            "Flexibility": averages['review__flexibility__avg'] or 0,
-            "Knowledge": averages['review__knowledge__avg'] or 0,
-            "Methodology": averages['review__methodology__avg'] or 0,
-        }
+
+        return [
+            {
+                "skill": skill, 
+                "score": round(score, 2) if score is not None else 0,
+            }
+            for skill, score in averages.items()
+        ]
 
     def get_reviews_count(self, obj):
         return obj.enrollments.filter(
