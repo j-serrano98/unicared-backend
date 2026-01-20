@@ -151,7 +151,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://*.railway.app',
     'https://*.vercel.app',
     'http://unicared.tech',
-    'unicared.tech',
+    'http://www.unicared.tech',
 ]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
