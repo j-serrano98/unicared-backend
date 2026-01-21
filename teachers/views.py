@@ -163,9 +163,10 @@ class TeacherDetailView(generics.RetrieveUpdateDestroyAPIView):
 # class TeacherReviewList(generics.ListCreateAPIView):
 #     # queryset = Review.objects.filter(where current teacher)
 
-# class CareerListView(generics.ListCreateAPIView):
-#     queryset = Career.objects.all()
-#     serializer_class = CareerSerializer
+class CareerListView(generics.ListCreateAPIView):
+    queryset = Career.objects.all()
+    serializer_class = CareerSerializer
+
 
 # class CareerDetailView(generics.RetrieveUpdateDestroyAPIView):
 #     queryset = Career.objects.all()

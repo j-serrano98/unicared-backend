@@ -34,7 +34,7 @@ urlpatterns = [
 #     path('teachers/<uuid:uuid>/reviews/', TeacherReviewList.as_view()), # Get all reviews by teacher
 
 #     # Careers & subjects
-#     path('careers/', CareerList.as_view()), # Get all careers
+    path('careers/', CareerListView.as_view()), # Get all careers
 #     path('careers/<int:id>', CareerDetail.as_view()), # Get details of career
     path("subjects/", SubjectListView.as_view()), # Get all subjects
 #     path("subjects/<int:pk>/", SubjectDetail.as_view()), # Get details of subject
