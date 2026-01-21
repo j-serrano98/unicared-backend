@@ -13,12 +13,12 @@ from .views import *
 urlpatterns = [
 
     # Authentication 
-    path('auth/signup/', signup),
     path('auth/login/', login),
+    path('auth/signup/', signup),
     # path('auth/me/', MeView.as_view()),
     
     # Profile
-    path('profile/', ProfileDetailView.as_view()), # All information about the user profile
+    path('profile/me/', ProfileDetailView.as_view()), # All information about the user profile
 #     path('profile/settings/', ProfileSettingsView.as_view()), # Settings set by the user to the account
 
 #     # Career & enrollments
