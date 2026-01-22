@@ -4,15 +4,44 @@ from .models import *
 from django.db.models import Avg, F, FloatField
 
 class ProfileDetailSerializer(serializers.ModelSerializer):
-    username = serializers.ReadOnlyField(source='user.username')
-    email = serializers.ReadOnlyField(source='user.email')
-    first_name = serializers.ReadOnlyField(source='user.first_name')
-    last_name = serializers.ReadOnlyField(source='user.last_name')
+    username = serializers.CharField(source='user.username')
+    first_name = serializers.CharField(source='user.first_name')
+    last_name = serializers.CharField(source='user.last_name')
+    email = serializers.CharField(source='user.email')
     career_name = serializers.ReadOnlyField(source='career.name')
     
     class Meta:
         model = Profile
-        fields = ['user', 'username', 'email', 'first_name', 'last_name', 'career', 'career_name', 'onboarding_completed']
+        fields = ['user',
+                  'username',
+                  'first_name',
+                  'last_name',
+                  'birthdate',
+                  'email',
+                  'career_name',
+                  'phone',
+                  'address',
+                  'state',
+                  'website',
+                  'bio',
+                  'linkedin_url',
+                  'fb_url',
+                  'github_user',
+                  'instagram_user',
+                  'onboarding_completed']
+
+    def update(self, instance, validated_data):
+        # 1. Extract the nested 'user' data from the validated data
+        user_data = validated_data.pop('user', {})
+        
+        # 2. Update the User instance (the related object)
+        user = instance.user
+        for attr, value in user_data.items():
+            setattr(user, attr, value)
+        user.save()
+
+        # 3. Update the Profile instance (the main object)
+        return super().update(instance, validated_data)
 
 class SelectCareerSerializer(serializers.Serializer):
     career_id = serializers.IntegerField()
