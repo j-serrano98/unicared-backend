@@ -106,7 +106,7 @@ class ProfileStatsView(APIView):
                 subject__credits__isnull=False
             ).aggregate(
                 total_credits=Sum("subject__credits"),
-            )['total_credits']
+            )['total_credits'] or 0
 
         gpa_data = enrollments.filter(
                 grade__isnull=False,
