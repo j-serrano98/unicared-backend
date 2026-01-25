@@ -208,11 +208,6 @@ def signup(request):
     serializer = RegisterSerializer(data=request.data)
 
     if not serializer.is_valid():
-
-        if 'username' in serializer.errors:
-            error_message = str(serializer.errors['username'][0])
-            return Response({'error': error_message}, status=status.HTTP_400_BAD_REQUEST)
-        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     user = serializer.save()
