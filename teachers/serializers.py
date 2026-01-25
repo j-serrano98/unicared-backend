@@ -8,6 +8,7 @@ class ProfileDetailSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(source='user.first_name')
     last_name = serializers.CharField(source='user.last_name')
     email = serializers.CharField(source='user.email')
+    career = serializers.ReadOnlyField(source='career.id')
     career_name = serializers.ReadOnlyField(source='career.name')
     
     class Meta:
@@ -18,6 +19,7 @@ class ProfileDetailSerializer(serializers.ModelSerializer):
                   'last_name',
                   'birthdate',
                   'email',
+                  'career',
                   'career_name',
                   'phone',
                   'address',
@@ -258,3 +260,13 @@ class TeacherDetailSerializer(TeacherSerializer):
         
         representation['reviews'] = ReviewSerializer(reviews, many=True).data
         return representation
+    
+
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'password', 'email')
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)
