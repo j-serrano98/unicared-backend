@@ -258,3 +258,14 @@ class TeacherDetailSerializer(TeacherSerializer):
         
         representation['reviews'] = ReviewSerializer(reviews, many=True).data
         return representation
+    
+
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'password', 'email')
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        response = User.objects.create_user(**validated_data)
+        print(response)

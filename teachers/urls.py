@@ -22,7 +22,7 @@ urlpatterns = [
 #     path('profile/settings/', ProfileSettingsView.as_view()), # Settings set by the user to the account
 
 #     # Career & enrollments
-    path('profile/career/', SelectCareerView.as_view()), # GET/POST profile career
+    path('profile/career/', SelectCareerView.as_view()), # POST profile career
     path('profile/enrollments/', EnrollmentListView.as_view()), # Get list of enrollments for the profile
     path('profile/enrollments/<int:pk>', EnrollmentUpdateView.as_view()), # Get details of enrollment
     path('profile/stats/', ProfileStatsView.as_view()), # Credits completed, GPA, progress, etc

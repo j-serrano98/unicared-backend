@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 from rest_framework.parsers import JSONParser
 from rest_framework.authtoken.models import Token
 from django.http import JsonResponse
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
@@ -200,36 +202,39 @@ class SubjectListView(generics.ListCreateAPIView):
 #     def get(self, request):
 #         serializer = ProfileSerializer(request.user.profile)
 
-@csrf_exempt
+@api_view(['POST'])
+@permission_classes([AllowAny])
 def signup(request):
-    if request.method == 'POST':
-        try:
-            data = JSONParser().parse(request)
-            user = User.objects.create_user(
-                username=data['username'],
-                password=data['password'],
-                email=data['email'])
-            user.save()
-            token = Token.objects.create(user=user)
-            return JsonResponse({'token': token.key}, status=201)
-        except IntegrityError:
-            return JsonResponse({'error': 'Username already exists'}, status=400)
+    serializer = RegisterSerializer(data=request.data)
+
+    if not serializer.is_valid():
+
+        if 'username' in serializer.errors:
+            error_message = str(serializer.errors['username'][0])
+            return Response({'error': error_message}, status=status.HTTP_400_BAD_REQUEST)
         
-@csrf_exempt
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    user = serializer.save()
+    token, _ = Token.objects.get_or_create(user=user)
+        
+    return Response({'token': token.key}, status=status.HTTP_201_CREATED)
+        
+@api_view(['POST'])
+@permission_classes([AllowAny])
 def login(request):
-    if request.method == 'POST':
-        data = JSONParser().parse(request)
-        user = authenticate(
-            request,
-            username=data['username'],
-            password=data['password'])
-        if user is None:
-            return JsonResponse({'error': 'Invalid credentials'}, status=400)
-            
-        else:
-            try:
-                token = Token.objects.get(user=user)
-            except Token.DoesNotExist:
-                token = Token.objects.create(user=user)
-            return JsonResponse({'token': str(token)}, status=201)
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    if not username or not password:
+        return Response({'error': 'Username and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    user = authenticate(username=username, password=password)
+
+    if user is None:
+        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    token, _ = Token.objects.get_or_create(user=user)
+    
+    return Response({'token': token.key}, status=status.HTTP_200_OK)
 
