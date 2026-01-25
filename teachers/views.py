@@ -101,7 +101,7 @@ class ProfileStatsView(APIView):
             subject__credits__isnull=False
             ).aggregate(
                 total_credits = Sum('subject__credits')
-            )['total_credits']
+            )['total_credits'] or 0
         
         credits_completed = enrollments.filter(
                 grade__isnull=False,
@@ -146,7 +146,7 @@ class ProfileStatsView(APIView):
 
             "credits_left": total_credits - credits_completed,
 
-            "completion_rate": credits_completed / total_credits,
+            "completion_rate": credits_completed / total_credits if total_credits > 0 and credits_completed > 0 else 0,
         }
 
         serializer = ProfileStatsSerializer(stats)
