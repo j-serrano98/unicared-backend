@@ -69,7 +69,7 @@ class Subject(models.Model):
     class Meta:
         db_table = 'subjects'
         verbose_name = 'Subject'
-        ordering = ['-id']
+        ordering = ['id']
 
     def __str__(self):
         return self.name

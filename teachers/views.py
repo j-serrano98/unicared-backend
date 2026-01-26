@@ -59,7 +59,7 @@ class SelectCareerView(generics.GenericAPIView):
                 subject=subject,
                 status=Enrollment.Status.NOT_TAKEN
             )
-            for subject in career.subjects.all()
+            for subject in career.subjects.all().order_by('id')
             if subject.id not in existing_subject_ids
         ]
 
