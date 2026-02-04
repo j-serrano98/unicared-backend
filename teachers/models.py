@@ -11,7 +11,7 @@ class Profile(models.Model):
     birthdate = models.DateField(blank=True, null=True)
     phone = models.CharField(max_length=10, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
-    state = models.CharField(max_length=10, blank=True, null=True)
+    state = models.CharField(max_length=25, blank=True, null=True)
     website = models.CharField(max_length=255, blank=True, null=True)
     bio = models.TextField(max_length=500, blank=True, null=True)
     linkedin_url = models.CharField(max_length=255, blank=True, null=True)

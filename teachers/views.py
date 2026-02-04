@@ -22,6 +22,7 @@ from django.db.models.functions import Cast
 
 
 class ProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
+    print("This is running")
     serializer_class = ProfileDetailSerializer
     permission_classes = [IsAuthenticated]
 
@@ -43,10 +44,14 @@ class SelectCareerView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         profile = request.user.profile
+        first_name = request.user.first_name
+        last_name = request.user.first_name
         career = get_object_or_404(Career, id=serializer.validated_data["career_id"])
 
         profile.career = career
-        profile.onboarding_completed = True
+
+        if first_name and last_name and profile.career:
+            profile.onboarding_completed = True
         profile.save()
 
         existing_subject_ids = set(
