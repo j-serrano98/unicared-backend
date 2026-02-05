@@ -22,7 +22,6 @@ from django.db.models.functions import Cast
 
 
 class ProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
-    print("This is running")
     serializer_class = ProfileDetailSerializer
     permission_classes = [IsAuthenticated]
 
@@ -158,7 +157,7 @@ class ProfileStatsView(APIView):
         return Response(serializer.data)
 
 class TeacherListView(generics.ListCreateAPIView):
-    queryset = Teacher.objects.all().prefetch_related('enrollments__review', 'subjects', 'department')
+    queryset = Teacher.objects.all().order_by('name').prefetch_related('enrollments__review', 'subjects', 'department')
     serializer_class = TeacherSerializer
     lookup_field = 'uuid'
 

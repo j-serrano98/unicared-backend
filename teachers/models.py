@@ -113,13 +113,13 @@ class Enrollment(models.Model):
 class Review(models.Model):
     enrollment = models.OneToOneField(Enrollment, on_delete=models.CASCADE, related_name="review", null=True, blank=True)
 
-    punctuality = models.PositiveSmallIntegerField()
-    clarity = models.PositiveSmallIntegerField()
-    justice = models.PositiveSmallIntegerField()
-    support = models.PositiveSmallIntegerField()
-    flexibility = models.PositiveSmallIntegerField()
-    knowledge = models.PositiveSmallIntegerField()
-    methodology = models.PositiveSmallIntegerField()
+    punctuality = models.PositiveSmallIntegerField(null=True, blank=True)
+    clarity = models.PositiveSmallIntegerField(null=True, blank=True)
+    justice = models.PositiveSmallIntegerField(null=True, blank=True)
+    support = models.PositiveSmallIntegerField(null=True, blank=True)
+    flexibility = models.PositiveSmallIntegerField(null=True, blank=True)
+    knowledge = models.PositiveSmallIntegerField(null=True, blank=True)
+    methodology = models.PositiveSmallIntegerField(null=True, blank=True)
 
     comment = models.TextField(blank=True, null=True)
 
@@ -142,7 +142,13 @@ class Review(models.Model):
             self.knowledge,
             self.methodology
         ]
-        return round((sum(fields) / len(fields)),2)
+
+        values = [v for v in fields if v is not None]
+
+        if not values:
+            return None
+
+        return round(sum(values) / len(values), 2)
     
     # def __str__(self):
     #     return self.review.id
