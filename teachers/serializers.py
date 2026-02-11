@@ -172,9 +172,11 @@ class SubjectSerializer(serializers.ModelSerializer):
 class TeacherSerializer(serializers.ModelSerializer):
     department_name = serializers.CharField(source='department.name', read_only=True)
     subjects = serializers.StringRelatedField(many=True, read_only=True)
-    rating = serializers.SerializerMethodField()
+
+    rating = serializers.FloatField(source='calculated_rating', read_only=True)
+    reviews_count = serializers.IntegerField(source='total_reviews', read_only=True)
+    
     skill_rating = serializers.SerializerMethodField()
-    reviews_count = serializers.SerializerMethodField()
     
     class Meta:
         model = Teacher
@@ -186,28 +188,13 @@ class TeacherSerializer(serializers.ModelSerializer):
                   'skill_rating',
                   'subjects',
                   ]
-
-    def get_rating(self, obj):
-        result = obj.enrollments.filter(
-            review__isnull=False
-        ).aggregate(
-            rating=Avg(
-                (
-                    F('review__punctuality') +
-                    F('review__clarity') +
-                    F('review__justice') +
-                    F('review__support') +
-                    F('review__flexibility') +
-                    F('review__knowledge') +
-                    F('review__methodology') 
-                ) / 7.0,
-                output_field=FloatField()
-            )
-        )
-
-        return result['rating']
     
     def get_skill_rating(self, obj):
+        
+        if self.context.get('request').query_params.get('top') == 'true':
+            return []
+        
+        
         averages = obj.enrollments.filter(
             review__isnull=False
         ).aggregate(
@@ -227,11 +214,6 @@ class TeacherSerializer(serializers.ModelSerializer):
             }
             for skill, score in averages.items()
         ]
-
-    def get_reviews_count(self, obj):
-        return obj.enrollments.filter(
-            review__isnull=False
-        ).count()
     
 
 class TeacherDetailSerializer(TeacherSerializer):
