@@ -16,7 +16,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from django.db.models import Avg
+from django.db.models import Avg, Count, F, FloatField
 from django.db.models import Sum, F, FloatField
 from django.db.models.functions import Cast
 
@@ -160,6 +160,28 @@ class TeacherListView(generics.ListCreateAPIView):
     queryset = Teacher.objects.all().order_by('name').prefetch_related('enrollments__review', 'subjects', 'department')
     serializer_class = TeacherSerializer
     lookup_field = 'uuid'
+
+    def get_queryset(self):
+        queryset = Teacher.objects.annotate(
+            total_reviews=Count('enrollments__review'),
+            calculated_rating=Avg(
+                (
+                    Cast(F('enrollments__review__punctuality'), FloatField()) +
+                    F('enrollments__review__clarity') +
+                    F('enrollments__review__justice') +
+                    F('enrollments__review__support') +
+                    F('enrollments__review__flexibility') +
+                    F('enrollments__review__knowledge') +
+                    F('enrollments__review__methodology')
+                ) / 7.0
+            )
+        ).prefetch_related('subjects', 'department')
+
+        top_param = self.request.query_params.get('top')
+        if top_param == 'true':
+            return queryset.filter(total_reviews__gt=0).order_by('-calculated_rating')[:5]
+        
+        return queryset.order_by('calculated_rating')
 
 class TeacherDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Teacher.objects.all().prefetch_related('enrollments__review', 'subjects', 'department')

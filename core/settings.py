@@ -194,7 +194,11 @@ else:
         }
     }
 
-
+# # Force search_path to public and keep our previous PgBouncer fix
+# DATABASES['default']['OPTIONS'] = {
+#     'options': '-c search_path=public'
+# }
+# DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = True
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
