@@ -44,6 +44,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ProfileStatsSerializer(serializers.Serializer):
     gpa = serializers.FloatField(allow_null=True)
+    start_date = serializers.CharField()
+    end_date = serializers.CharField()
     total_enrollments = serializers.IntegerField()
     completed_enrollments = serializers.IntegerField()
     total_reviews = serializers.IntegerField()
@@ -112,11 +114,13 @@ class EnrollmentSerializer(serializers.ModelSerializer):
         required=False
     )
     
-    teacher = serializers.PrimaryKeyRelatedField(
+    teacher = serializers.SlugRelatedField(
         queryset=Teacher.objects.all(),
+        slug_field="uuid",
         allow_null=True,
         required=False,
     )
+
 
     teacher_name = serializers.CharField(
         source="teacher.name",

@@ -19,6 +19,7 @@ from rest_framework.response import Response
 from django.db.models import Avg, Count, F, FloatField
 from django.db.models import Sum, F, FloatField
 from django.db.models.functions import Cast
+from dateutil.relativedelta import relativedelta
 
 
 class ProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -97,9 +98,25 @@ class ProfileStatsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        
         enrollments = Enrollment.objects.filter(
             student=request.user.profile
         )
+
+        first_enrollment = Enrollment.objects.filter(completion_date__isnull=False).order_by("completion_date")[:1].first()
+
+        if first_enrollment:
+
+            num_months = enrollments.count() 
+            
+            start_date = first_enrollment.completion_date.strftime("%B %Y")
+            
+            end_date_obj = first_enrollment.completion_date + relativedelta(months=num_months)
+            end_date = end_date_obj.strftime("%B %Y")
+
+        else:
+            start_date = "Not Confirmed"
+            end_date = "Not Confirmed"
 
         total_credits = enrollments.filter(
             subject__credits__isnull=False
@@ -132,6 +149,10 @@ class ProfileStatsView(APIView):
         )
 
         stats = {
+            "start_date": start_date,
+
+            "end_date": end_date,
+
             "gpa": gpa,
 
             "total_enrollments": enrollments.count(),
