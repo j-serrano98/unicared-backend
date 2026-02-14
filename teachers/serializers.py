@@ -42,6 +42,11 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email']
 
+class RankTierSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RankTier
+        fields = ['level_name', 'color_code']
+
 class ProfileStatsSerializer(serializers.Serializer):
     gpa = serializers.FloatField(allow_null=True)
     start_date = serializers.CharField()
@@ -53,6 +58,9 @@ class ProfileStatsSerializer(serializers.Serializer):
     credits_completed = serializers.IntegerField()
     credits_left = serializers.IntegerField()
     completion_rate = serializers.FloatField()
+    current_rank = RankTierSerializer(read_only=True)
+
+
 
 class ReviewSerializer(serializers.ModelSerializer):
 
@@ -164,7 +172,7 @@ class EnrollmentSerializer(serializers.ModelSerializer):
             )
 
         return instance
-    
+ 
 
 class SubjectSerializer(serializers.ModelSerializer):
 

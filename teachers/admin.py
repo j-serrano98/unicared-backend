@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Teacher, Review, Department, Subject, Career, Profile, Enrollment
+from .models import Teacher, Review, Department, Subject, Career, Profile, Enrollment, RankTier
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from django.db.models.functions import Lower
@@ -24,7 +24,6 @@ class SubjectResource(resources.ModelResource):
         model = Subject
         fields = ('id', 'name', 'credits', 'period')
 
-
 class CareeResource(resources.ModelResource):
     class Meta:
         model = Career
@@ -35,13 +34,15 @@ class ProfileResource(resources.ModelResource):
         model = Profile
         fields = ('id', 'career_id', 'user_id', 'onboarding_completed')
 
-
 class EnrollmentResource(resources.ModelResource):
     class Meta:
         model = Enrollment
         fields = ('id', 'status', 'grade', 'student', 'teacher', 'completion_date', 'subject')
 
-
+class RankTierResource(resources.ModelResource):
+    class Meta:
+        model = RankTier
+        fields = ('id', 'career', 'level_name', 'min_rate', 'color_code')
 
 @admin.register(Teacher)
 class TeacherAdmin(ImportExportModelAdmin):
@@ -99,3 +100,11 @@ class EnrollmentAdmin(ImportExportModelAdmin):
 
     search_fields = ('name', 'department')
     list_display = ('id', 'status', 'grade', 'student', 'teacher', 'completion_date', 'subject')
+
+@admin.register(RankTier)
+class RankTierAdmin(ImportExportModelAdmin):
+    resource_classes = [RankTierResource]
+
+    search_fields = ('career', 'level_name')
+    list_display = ('id', 'career', 'level_name', 'min_rate', 'color_code')
+
