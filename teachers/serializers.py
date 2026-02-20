@@ -194,6 +194,7 @@ class TeacherSerializer(serializers.ModelSerializer):
         model = Teacher
         fields = ['uuid',
                   'name',
+                  'slug',
                   'department_name',
                   'rating',
                   'reviews_count',
