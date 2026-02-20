@@ -2,9 +2,13 @@ import uuid
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import Sum, Q
+
 
 
 class Profile(models.Model):
+
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     career = models.ForeignKey('Career', on_delete=models.SET_NULL, null=True, blank=True, related_name="profiles")
     onboarding_completed = models.BooleanField(default=False)
@@ -18,6 +22,36 @@ class Profile(models.Model):
     fb_url = models.CharField(max_length=255, blank=True, null=True)
     github_user = models.CharField(max_length=100, blank=True, null=True)
     instagram_user = models.CharField(max_length=100, blank=True, null=True)
+
+    def get_completion_rate(self):
+        """Calculates rate using the 'enrollments' related_name."""
+        stats = self.enrollments.aggregate(
+            total=Sum('subject__credits'),
+            completed=Sum('subject__credits', filter=Q(grade__isnull=False))
+        )
+        total = stats['total'] or 0
+        completed = stats['completed'] or 0
+        return completed / total if total > 0 else 0
+
+    @property
+    def current_rank(self):
+        """Finds the tier based on the calculated rate."""
+        rate = self.get_completion_rate()
+        
+        # Priority 1: Career-specific ranks
+        rank = RankTier.objects.filter(
+            career=self.career, 
+            min_rate__lte=rate
+        ).order_by('-min_rate').first()
+
+        # Priority 2: Global/Default ranks
+        if not rank:
+            rank = RankTier.objects.filter(
+                career__isnull=True, 
+                min_rate__lte=rate
+            ).order_by('-min_rate').first()
+            
+        return rank
 
     def __str__(self):
         return self.user.username
@@ -153,9 +187,26 @@ class Review(models.Model):
     # def __str__(self):
     #     return self.review.id
     
+class RankTier(models.Model):
+    career = models.ForeignKey(
+        'Career', 
+        on_delete=models.CASCADE, 
+        related_name="ranks",
+        help_text="The career this rank set belongs to. Leave null for a 'Default' set."
+    )
+    level_name = models.CharField(max_length=100)
+    min_rate = models.FloatField(
+        validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],
+        help_text="The minimum completion rate required for this rank (0.0 to 1.0)"
+    )
+    color_code = models.CharField(max_length=20, default="slate", help_text="Tailwind color name")
 
+    class Meta:
+        ordering = ['min_rate']
+        unique_together = ('career', 'min_rate')
 
-
+    def __str__(self):
+        return f"[{self.career.name}] {self.level_name} (>= {self.min_rate})"
 
 
 

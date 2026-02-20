@@ -98,10 +98,21 @@ class ProfileStatsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        profile = get_object_or_404(Profile, user=request.user)
+
+        stats_data = self.get_stats_context(profile)
+
+        stats_data['current_rank'] = profile.current_rank
+
+        serializer = ProfileStatsSerializer(stats_data)
+
+        return Response(serializer.data)
+
+    def get_stats_context(self, profile):
         
-        enrollments = Enrollment.objects.filter(
-            student=request.user.profile
-        )
+        enrollments = profile.enrollments.all()
+        
+        completion_rate = profile.get_completion_rate()
 
         first_enrollment = Enrollment.objects.filter(completion_date__isnull=False).order_by("completion_date")[:1].first()
 
@@ -118,18 +129,16 @@ class ProfileStatsView(APIView):
             start_date = "Not Confirmed"
             end_date = "Not Confirmed"
 
-        total_credits = enrollments.filter(
-            subject__credits__isnull=False
-            ).aggregate(
-                total_credits = Sum('subject__credits')
-            )['total_credits'] or 0
+        credits_data = enrollments.aggregate(
+            total_credits=Sum('subject__credits'),
+            completed_credits=Sum(
+                'subject__credits', 
+                filter=models.Q(grade__isnull=False)
+            )
+        )
         
-        credits_completed = enrollments.filter(
-                grade__isnull=False,
-                subject__credits__isnull=False
-            ).aggregate(
-                total_credits=Sum("subject__credits"),
-            )['total_credits'] or 0
+        total_credits = credits_data['total_credits'] or 0
+        credits_completed = credits_data['completed_credits'] or 0
 
         gpa_data = enrollments.filter(
                 grade__isnull=False,
@@ -148,7 +157,7 @@ class ProfileStatsView(APIView):
             else None
         )
 
-        stats = {
+        return {
             "start_date": start_date,
 
             "end_date": end_date,
@@ -171,11 +180,8 @@ class ProfileStatsView(APIView):
 
             "credits_left": total_credits - credits_completed,
 
-            "completion_rate": credits_completed / total_credits if total_credits > 0 and credits_completed > 0 else 0,
+            "completion_rate": completion_rate,
         }
-
-        serializer = ProfileStatsSerializer(stats)
-        return Response(serializer.data)
 
 class TeacherListView(generics.ListCreateAPIView):
     queryset = Teacher.objects.all().order_by('name').prefetch_related('enrollments__review', 'subjects', 'department')
