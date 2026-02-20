@@ -60,6 +60,7 @@ class Teacher(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     name = models.CharField(max_length=100)
     department = models.ForeignKey('Department', on_delete=models.SET_NULL, null=True, blank=True, related_name='teachers')
+    slug = models.SlugField(max_length=150, default="", null=False)
     
     class Meta:
         db_table = 'teachers'

@@ -7,7 +7,7 @@ from django.db.models.functions import Lower
 class TeacherResource(resources.ModelResource):
     class Meta:
         model = Teacher
-        fields = ('id', 'name', 'uuid', 'department_id')
+        fields = ('id', 'name', 'slug', 'uuid', 'department_id')
 
 class ReviewResource(resources.ModelResource):
     class Meta:
@@ -49,7 +49,8 @@ class TeacherAdmin(ImportExportModelAdmin):
     resource_classes = [TeacherResource]
 
     search_fields = ['name']
-    list_display = ('id', 'name', 'uuid', 'department_id')
+    list_display = ('id', 'name', 'slug', 'uuid', 'department_id')
+    prepopulated_fields = {'slug': ["name"]}
 
     def get_ordering(self, request):
         return [Lower('name')] 
