@@ -29,7 +29,7 @@ urlpatterns = [
 
 #     # Teachers
     path('teachers/', TeacherListView.as_view()), # Get all teachers
-    path('teachers/<uuid:uuid>/', TeacherDetailView.as_view()), # Get details of teacher
+    path('teachers/<slug:slug>/', TeacherDetailView.as_view()), # Get details of teacher
     # path('teachers/reviews/',)
 #     path('teachers/<uuid:uuid>/reviews/', TeacherReviewList.as_view()), # Get all reviews by teacher
 
