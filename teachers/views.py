@@ -16,8 +16,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from django.db.models import Avg, Count, F, FloatField
-from django.db.models import Sum, F, FloatField
+from django.db.models import Avg, Count, F, FloatField, Sum, Q, FloatField
 from django.db.models.functions import Cast
 from dateutil.relativedelta import relativedelta
 
@@ -157,6 +156,8 @@ class ProfileStatsView(APIView):
             else None
         )
 
+        print(enrollments)
+
         return {
             "start_date": start_date,
 
@@ -171,8 +172,15 @@ class ProfileStatsView(APIView):
             ).count(),
 
             "total_reviews": enrollments.filter(
-                review__isnull=False,
-            ).count(),
+                    Q(review__punctuality__isnull=False) |
+                    Q(review__clarity__isnull=False) |
+                    Q(review__justice__isnull=False) |
+                    Q(review__support__isnull=False) |
+                    Q(review__flexibility__isnull=False) |
+                    Q(review__knowledge__isnull=False) |
+                    Q(review__methodology__isnull=False) |
+                    Q(review__comment__isnull=False)
+                ).distinct().count(),
 
             "total_credits": total_credits,
 
