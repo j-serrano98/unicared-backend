@@ -16,7 +16,7 @@ class ProfileDetailSerializer(serializers.ModelSerializer):
         model = Profile
         fields = [
             'username', 'first_name', 'last_name',
-            'birthdate', 'email', 'career', 'career_name',
+            'birthdate', 'email', 'profile_pic', 'career', 'career_name',
             'phone', 'address', 'state', 'website',
             'bio', 'linkedin_url', 'fb_url', 'github_user',
             'instagram_user', 'onboarding_completed']
