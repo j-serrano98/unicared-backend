@@ -11,6 +11,7 @@ class Profile(models.Model):
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     career = models.ForeignKey('Career', on_delete=models.SET_NULL, null=True, blank=True, related_name="profiles")
+    profile_pic = models.CharField(max_length=500, blank=True, null=True)
     onboarding_completed = models.BooleanField(default=False)
     birthdate = models.DateField(blank=True, null=True)
     phone = models.CharField(max_length=10, blank=True, null=True)

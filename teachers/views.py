@@ -125,8 +125,8 @@ class ProfileStatsView(APIView):
             end_date = end_date_obj.strftime("%B %Y")
 
         else:
-            start_date = "Not Confirmed"
-            end_date = "Not Confirmed"
+            start_date = "Sin especificar"
+            end_date = "Sin especificar"
 
         credits_data = enrollments.aggregate(
             total_credits=Sum('subject__credits'),
@@ -155,8 +155,6 @@ class ProfileStatsView(APIView):
             if gpa_data["total_credits"]
             else None
         )
-
-        print(enrollments)
 
         return {
             "start_date": start_date,
