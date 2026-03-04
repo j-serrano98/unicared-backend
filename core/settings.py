@@ -10,6 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+from django.templatetags.static import static
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 from pathlib import Path
 import os
 import dj_database_url
@@ -94,6 +97,14 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    # Admin Styling apps
+    "unfold",
+    "unfold.contrib.filters", 
+    "unfold.contrib.forms",
+    "unfold.contrib.import_export",
+
+
+    # Django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -106,6 +117,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'import_export',
+
+
 
     # Local apps
     'teachers.apps.TeachersConfig',
@@ -235,7 +248,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -246,3 +259,35 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 IMPORT_EXPORT_ENCODING = 'utf-8'
+
+
+UNFOLD = {
+    "SITE_TITLE": "UnicaRed Admin",
+    "SITE_DROPDOWN": [
+        {
+            "icon": "language",
+            "title": _("UnicaRed"),
+            "link": os.environ.get('ORIGIN_URL'),
+        },
+        {
+            "icon": "home",
+            "title": _("Home"),
+            "link": os.environ.get('ADMIN_URL'),
+        },
+        {
+            "icon": "person_pin",
+            "title": _("Teachers"),
+            "link": "https://unicared.tech/profesores/",
+        },
+        {
+            "icon": "menu_book",
+            "title": _("Subjects"),
+            "link": "https://unicared.tech/",
+        },
+        {
+            "icon": "person",
+            "title": _("Profile"),
+            "link": "https://unicared.tech/me/",
+        },
+    ]
+}

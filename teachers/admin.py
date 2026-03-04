@@ -1,8 +1,11 @@
 from django.contrib import admin
+from django.db import models
+from unfold.contrib.forms.widgets import WysiwygWidget
 from .models import Teacher, Review, Department, Subject, Career, Profile, Enrollment, RankTier
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from django.db.models.functions import Lower
+from unfold.admin import ModelAdmin
 
 class TeacherResource(resources.ModelResource):
     class Meta:
@@ -45,7 +48,7 @@ class RankTierResource(resources.ModelResource):
         fields = ('id', 'career', 'level_name', 'min_rate', 'color_code')
 
 @admin.register(Teacher)
-class TeacherAdmin(ImportExportModelAdmin):
+class TeacherAdmin(ModelAdmin):
     resource_classes = [TeacherResource]
 
     search_fields = ['name']
@@ -56,14 +59,19 @@ class TeacherAdmin(ImportExportModelAdmin):
         return [Lower('name')] 
 
 @admin.register(Review)
-class ReviewAdmin(ImportExportModelAdmin):
+class ReviewAdmin(ModelAdmin):
     resource_classes = [ReviewResource]
+    formfield_overrides = {
+        models.TextField: {
+            "widget": WysiwygWidget,
+        }
+    }
 
     list_display = ('id', 'punctuality', 'clarity', 'justice', 'support', 'flexibility', 'knowledge', 'methodology', 'comment', 'created_at', 'updated_at', 'enrollment_id')
 
 
 @admin.register(Department)
-class DepartmentAdmin(ImportExportModelAdmin):
+class DepartmentAdmin(ModelAdmin):
     resource_classes = [DepartmentResource]
 
     search_fields = ['name']
@@ -71,7 +79,7 @@ class DepartmentAdmin(ImportExportModelAdmin):
 
 
 @admin.register(Subject)
-class SubjectAdmin(ImportExportModelAdmin):
+class SubjectAdmin(ModelAdmin):
     resource_classes = [SubjectResource]
 
     search_fields = ['name']
@@ -79,7 +87,7 @@ class SubjectAdmin(ImportExportModelAdmin):
 
 
 @admin.register(Career)
-class CareerAdmin(ImportExportModelAdmin):
+class CareerAdmin(ModelAdmin):
     resource_classes = [CareeResource]
 
     search_fields = ['name']
@@ -88,7 +96,7 @@ class CareerAdmin(ImportExportModelAdmin):
 
 
 @admin.register(Profile)
-class ProfileAdmin(ImportExportModelAdmin):
+class ProfileAdmin(ModelAdmin):
     resource_classes = [ProfileResource]
 
     # prepopulated_fields = {'slug': ('name',)}
@@ -96,14 +104,14 @@ class ProfileAdmin(ImportExportModelAdmin):
     list_display = ('id', 'career_id', 'user_id', 'onboarding_completed')
 
 @admin.register(Enrollment)
-class EnrollmentAdmin(ImportExportModelAdmin):
+class EnrollmentAdmin(ModelAdmin):
     resource_classes = [EnrollmentResource]
 
     search_fields = ('name', 'department')
     list_display = ('id', 'status', 'grade', 'student', 'teacher', 'completion_date', 'subject')
 
 @admin.register(RankTier)
-class RankTierAdmin(ImportExportModelAdmin):
+class RankTierAdmin(ModelAdmin):
     resource_classes = [RankTierResource]
 
     search_fields = ('career', 'level_name')
