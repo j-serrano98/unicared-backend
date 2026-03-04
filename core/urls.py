@@ -1,16 +1,9 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.http import JsonResponse
-
-def api_root(request):
-    return JsonResponse({
-        "message": "Welcome to Unicared API",
-        "status": "online",
-        "endpoints": ["/admin/", "/teachers/"]
-    })
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
-    path('', api_root),
+    path('', RedirectView.as_view(url='admin/', permanent=True)),
     path('admin/', admin.site.urls),
     path('api/v1/', include('teachers.urls')),
 ]
