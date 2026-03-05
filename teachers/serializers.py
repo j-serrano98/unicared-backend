@@ -53,6 +53,7 @@ class ProfileStatsSerializer(serializers.Serializer):
     end_date = serializers.CharField()
     total_enrollments = serializers.IntegerField()
     completed_enrollments = serializers.IntegerField()
+    total_teachers = serializers.IntegerField()
     total_reviews = serializers.IntegerField()
     total_credits = serializers.IntegerField()
     credits_completed = serializers.IntegerField()

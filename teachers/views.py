@@ -113,7 +113,7 @@ class ProfileStatsView(APIView):
         
         completion_rate = profile.get_completion_rate()
 
-        first_enrollment = Enrollment.objects.filter(completion_date__isnull=False).order_by("completion_date")[:1].first()
+        first_enrollment = enrollments.filter(completion_date__isnull=False).order_by("completion_date")[:1].first()
 
         if first_enrollment:
 
@@ -138,6 +138,8 @@ class ProfileStatsView(APIView):
         
         total_credits = credits_data['total_credits'] or 0
         credits_completed = credits_data['completed_credits'] or 0
+
+        total_teachers = enrollments.exclude(teacher__isnull=True).values("teacher").distinct().count()
 
         gpa_data = enrollments.filter(
                 grade__isnull=False,
@@ -168,6 +170,8 @@ class ProfileStatsView(APIView):
             "completed_enrollments": enrollments.filter(
                 status=Enrollment.Status.COMPLETED
             ).count(),
+
+            "total_teachers": total_teachers,
 
             "total_reviews": enrollments.filter(
                     Q(review__punctuality__isnull=False) |
