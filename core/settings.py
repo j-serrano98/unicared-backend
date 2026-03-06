@@ -87,10 +87,7 @@ LOGGING = {
 
 ALLOWED_HOSTS = [
     'localhost', 
-    '127.0.0.1', 
-    '.up.railway.app',
-    os.environ.get('PRODUCTION_HOST'),
-    os.environ.get('STAGING_HOST')
+    '127.0.0.1',
 ]
 
 
@@ -152,11 +149,8 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    "https://unicared-josue-serrano.vercel.app",
-    'https://unicared-frontend-uppf-qtwk6tblj.vercel.app',
     'https://unicared-frontend-uppf.vercel.app',
     'http://unicared.tech',
-    "https://www.yournewdomain.me",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -267,12 +261,12 @@ UNFOLD = {
         {
             "icon": "language",
             "title": _("UnicaRed"),
-            "link": os.environ.get('ORIGIN_URL'),
+            "link": "https://unicared.tech/",
         },
         {
             "icon": "home",
             "title": _("Home"),
-            "link": os.environ.get('ADMIN_URL'),
+            "link": f"{os.environ.get('PRODUCTION_HOST')}/admin/",
         },
         {
             "icon": "person_pin",
@@ -282,7 +276,7 @@ UNFOLD = {
         {
             "icon": "menu_book",
             "title": _("Subjects"),
-            "link": "https://unicared.tech/",
+            "link": "https://unicared.tech/subjects/",
         },
         {
             "icon": "person",
